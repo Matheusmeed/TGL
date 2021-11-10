@@ -1,0 +1,272 @@
+body {
+    background: #f7f7f7;
+    margin: 0;
+    font-style: italic;
+    color: #707070;
+    height: 100vh;
+}
+
+header {
+    padding: 10px;
+    border: 1px solid #cecece;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 80px;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+header h1 {
+    display: inline-block;
+    font-weight: bold;
+    text-decoration: underline #b6c505 4px;
+}
+
+.headerBtns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+}
+
+.headerBtns button {
+    background: none;
+    border: none;
+    margin-left: 10px;
+    font-weight: bold;
+    color: #707070;
+}
+
+.headerBtns button:hover {
+    color: #b6c505;
+}
+
+.headerBtns img {
+    width: 15px;
+}
+
+img {
+    width: 10px;
+}
+
+button {
+    cursor: pointer;
+}
+
+.negrito {
+    font-weight: bold;
+}
+
+/* Div container */
+.container {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.container h2 {
+    font-weight: 300;
+}
+
+span {
+    font-weight: bold;
+}
+
+/* Div Bet */
+.bet {
+    width: 50%;
+}
+
+.bet div {
+    margin-bottom: 14px;
+}
+
+.chooseGame {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.chooseGameBtn {
+    background: white;
+    border: 2px solid;
+    border-radius: 50px;
+    margin-right: 10px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.btnPurple {
+    color: #7f3992;
+}
+
+.btnPurple:hover {
+    background-color: #7f399294;
+    color: white;
+    border-color: #7f399294;
+}
+
+.btnGreen {
+    color: #01ac66;
+}
+
+.btnGreen:hover {
+    background-color: #01ac6588;
+    color: white;
+    border-color: #01ac6588;
+}
+
+.btnOrange {
+    color: #f79c31;
+}
+
+.btnOrange:hover {
+    background-color: #f79b3188;
+    color: white;
+    border-color: #f79b3188;
+}
+
+.divNumbers {
+    width: 560px;
+}
+
+.divNumbers button {
+    background: #adc0c4;
+    color: white;
+    margin: 8px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+}
+
+.divNumbers button:hover {
+    background: #adc0c47a;
+}
+
+.endBtns {
+    display: flex;
+    width: 550px;
+    justify-content: space-between;
+}
+
+.endBtns button {
+    color: #27c383;
+    background: none;
+    border: 2px solid #27c383;
+    border-radius: 6px;
+    padding: 5px 10px;
+}
+
+.endBtns button:hover {
+    color: #00ff95;
+    background: none;
+    border: 2px solid #00ff95;
+}
+
+.endBtns img {
+    width: 20px;
+}
+
+#completeGameBtn {
+    margin-right: 15px;
+}
+
+#addToCartBtn {
+    background: #27c383;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+#addToCartBtn:hover {
+    background: #00ff95;
+}
+
+#addToCartBtn img {
+    margin-right: 10px;
+}
+
+/* div  Cart*/
+
+.cart {
+    background-color: white;
+    width: 400px;
+    box-shadow: 2px 1px 4px #adc0c4;
+    border-radius: 10px;
+    height: 440px;
+    position: relative;
+}
+
+.cardHeader {
+    padding: 20px;
+}
+
+.cardHeader h2 {
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+#divSave {
+    width: 100%;
+    background-color: #f4f4f4;
+    position: absolute;
+    bottom: 0;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#divSave img {
+    width: 20px;
+}
+
+#divSave button {
+    color: #27c383;
+    font-weight: bold;
+    font-size: 1.9em;
+    font-style: italic;
+    border: none;
+    background: none;
+}
+
+#divSave button:hover {
+    color: #00ff95;
+}
+
+.lixeiraBtn {
+    height: 68px;
+    background: none;
+    border: none;
+    border-right: 5px solid;
+    margin-right: 10px;
+}
+
+.lixeiraImg {
+    width: 25px;
+}
+
+.cardApostas {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.game {
+    font-weight: bold;
+    display: inline;
+}
+
+#divOverflow {
+    height: 200px;
+    overflow-y: auto;
+}
+
+/* barra de rolagem */
+#divOverflow::-webkit-scrollbar {
+    width: 3px;
+}
+
+#divOverflow::-webkit-scrollbar-thumb {
+    background-color: #adc0c4;
+}

@@ -270,3 +270,7 @@ span {
 #divOverflow::-webkit-scrollbar-thumb {
     background-color: #adc0c4;
 }
+
+#qtdNumeros {
+    font-size: 1.4em;
+}

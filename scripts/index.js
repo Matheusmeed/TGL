@@ -5,6 +5,10 @@
     var $megasenaBtn = document.getElementById('megasenaGame');
     var $lotomaniaBtn = document.getElementById('lotomaniaGame');
 
+    initilize();
+
+    function initilize() {}
+
     getData();
     var jsonData, lotofacilInfo, megasenaInfo, lotomaniaInfo;
 
@@ -39,6 +43,11 @@
     $megasenaBtn.addEventListener('click', () => handleChooseGame($megasenaBtn));
     $lotomaniaBtn.addEventListener('click', () => handleChooseGame($lotomaniaBtn));
 
+    // Inciar com lotofácil
+    setTimeout(() => {
+        handleChooseGame($lotofacilBtn);
+    }, 30);
+
     function handleChooseGame(game) {
         lotofacilGame.removeAttribute('style');
         megasenaGame.removeAttribute('style');
@@ -67,11 +76,14 @@
     var $divNumbers = document.getElementsByClassName('divNumbers')[0];
     var numberList,
         selectedNumbers = [];
+    let qtdNumeros = document.getElementById('qtdNumeros');
 
     function setGameNumbers() {
         $divNumbers.innerHTML = '';
         numberList = [];
         selectedNumbers = [];
+        qtdNumeros.innerHTML = selectedNumbers.length;
+        qtdNumeros.style.color = actualGameInfo.color;
         for (let i = 1; i <= actualGameInfo.range; i++) {
             var numberBtn = document.createElement('button');
             numberBtn.innerHTML = i;
@@ -90,9 +102,24 @@
 
     function handleClick(id) {
         numberList.forEach((number) => {
-            if (number.value == id) {
-                number.style.background = actualGameInfo.color;
-                selectedNumbers.push(Number(number.value));
+            if (number.value == id && !number.getAttribute('selecionado')) {
+                if (selectedNumbers.length == Number(actualGameInfo['max-number'])) {
+                    alert(`Você já adicionou ${actualGameInfo['max-number']} números!`);
+                } else {
+                    number.style.background = actualGameInfo.color;
+                    number.setAttribute('selecionado', true);
+                    selectedNumbers.push(Number(number.value));
+                    qtdNumeros.innerHTML = selectedNumbers.length;
+                }
+            } else if (number.value == id && number.getAttribute('selecionado')) {
+                number.style.removeProperty('background');
+                number.removeAttribute('selecionado');
+                let index = selectedNumbers.indexOf(Number(id));
+
+                if (index > -1) {
+                    selectedNumbers.splice(index, 1);
+                }
+                qtdNumeros.innerHTML = selectedNumbers.length;
             }
         });
     }
@@ -109,16 +136,17 @@
     var randomNumbers = [];
 
     function completeGame() {
-        clearGame();
         randomNumbers = [];
-        let total = Number(actualGameInfo['max-number']);
+        let total = Number(actualGameInfo['max-number']) - selectedNumbers.length;
         let range = Number(actualGameInfo['range']);
 
         while (randomNumbers.length < total) {
             var random = Math.floor(Math.random() * range + 1);
 
             if (!randomNumbers.includes(random)) {
-                randomNumbers.push(random);
+                if (!selectedNumbers.includes(random)) {
+                    randomNumbers.push(random);
+                }
             }
         }
         randomNumbers.forEach((number) => {
@@ -132,13 +160,19 @@
     var totalPrice = 0;
     var elements = [];
     var deleteButtons = [];
+    let numbers = [];
 
     function createElement() {
-        const noRepeatNumbers = [...new Set(selectedNumbers)];
+        let noRepeatNumbers = [...new Set(selectedNumbers)];
 
         if (noRepeatNumbers.length != actualGameInfo['max-number']) {
-            alert(`Você deve escolher ${actualGameInfo['max-number']} números!`);
+            if (noRepeatNumbers.length < actualGameInfo['max-number']) {
+                alert(`Você deve escolher ${actualGameInfo['max-number']} números! Ainda faltam ${actualGameInfo['max-number'] - noRepeatNumbers.length} números.`);
+            }
         } else {
+            numbers.push(noRepeatNumbers);
+            console.log(numbers);
+            clearGame();
             let selectedNumbersStr = noRepeatNumbers.sort((a, b) => a - b).join(', ');
             let id = (contId += 1);
             totalPrice += Number(actualGameInfo.price);
@@ -162,7 +196,7 @@
             divGameName.style.color = actualGameInfo.color;
             divGameName.className = 'game';
             let divPrice = document.createElement('div');
-            divPrice.innerHTML = ` R$ ${actualGameInfo.price}`;
+            divPrice.innerHTML = ` R$ ${realConvert(actualGameInfo.price)}`;
             divPrice.className = 'd-inline';
 
             divInfo.appendChild(divNumbers, divGameName, divPrice);
@@ -186,10 +220,12 @@
 
     var divFather = document.getElementById('divOverflow');
     var totalPriceDiv = document.getElementById('valorTotal');
+    let noBet = document.getElementById('semAposta');
 
     function addElementToCart(divMain) {
+        noBet.innerHTML = '';
         divFather.appendChild(divMain);
-        totalPriceDiv.innerHTML = totalPrice;
+        totalPriceDiv.innerHTML = realConvert(totalPrice);
     }
 
     function addRemoveListener() {
@@ -206,10 +242,18 @@
                     elements.splice(index, 1);
                 }
 
+                if (elements.length == 0) {
+                    noBet.innerHTML = 'Você ainda não possui apostas... Escolha o seu jogo favorito, preencha os números e teste a sua sorte fazendo a sua aposta!';
+                }
+
                 el.remove();
                 totalPrice -= Number(el.value);
-                totalPriceDiv.innerHTML = totalPrice;
+                totalPriceDiv.innerHTML = realConvert(totalPrice);
             }
         });
+    }
+
+    function realConvert(num) {
+        return num.toLocaleString('pt-br', { minimumFractionDigits: 2 });
     }
 })(window, document);

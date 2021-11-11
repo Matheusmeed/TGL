@@ -1,16 +1,9 @@
 (function (_window, document) {
     'use strict';
 
-    var $lotofacilBtn = document.getElementById('lotofacilGame');
-    var $megasenaBtn = document.getElementById('megasenaGame');
-    var $lotomaniaBtn = document.getElementById('lotomaniaGame');
-
-    initilize();
-
-    function initilize() {}
-
     getData();
-    var jsonData, lotofacilInfo, megasenaInfo, lotomaniaInfo;
+    let jsonData;
+    let games = [];
 
     async function getData() {
         await fetch('../games.json')
@@ -22,44 +15,57 @@
 
     function handleInfo() {
         jsonData.types.forEach((element) => {
-            switch (element.type) {
-                case 'Lotofácil':
-                    lotofacilInfo = element;
-                case 'Mega-Sena':
-                    megasenaInfo = element;
-                case 'Quina':
-                    lotomaniaInfo = element;
-                default:
-                    break;
+            games.push(element);
+        });
+        createGamesBtn();
+    }
+
+    const $gamesDiv = document.getElementById('gamesDiv');
+    let gameBtns = [];
+
+    function createGamesBtn() {
+        games.forEach((el) => {
+            let newBtn = document.createElement('button');
+            newBtn.className = 'chooseGameBtn';
+            newBtn.id = el.type;
+            newBtn.innerHTML = el.type;
+            newBtn.setAttribute('color', el.color);
+            newBtn.style.color = el.color;
+            newBtn.style.borderColor = el.color;
+            newBtn.addEventListener('click', () => handleChooseGame(newBtn));
+            if (newBtn.id == 'Lotofácil') {
+                handleChooseGame(newBtn);
             }
+            gameBtns.push(newBtn);
+        });
+        showGameButtons();
+    }
+
+    function showGameButtons() {
+        gameBtns.forEach((el) => {
+            $gamesDiv.appendChild(el);
         });
     }
 
-    var actualGameInfo;
-    var $gameTitle = document.getElementById('gameTitle');
-    var $gameDescription = document.getElementById('gameDescription');
+    let actualGameInfo;
+    let $gameTitle = document.getElementById('gameTitle');
+    let $gameDescription = document.getElementById('gameDescription');
 
-    $lotofacilBtn.addEventListener('click', () => handleChooseGame($lotofacilBtn));
-    $megasenaBtn.addEventListener('click', () => handleChooseGame($megasenaBtn));
-    $lotomaniaBtn.addEventListener('click', () => handleChooseGame($lotomaniaBtn));
-
-    // Inciar com lotofácil
-    setTimeout(() => {
-        handleChooseGame($lotofacilBtn);
-    }, 30);
+    // Inciar com primeiro jogo : n feita ainda
 
     function handleChooseGame(game) {
-        lotofacilGame.removeAttribute('style');
-        megasenaGame.removeAttribute('style');
-        lotomaniaGame.removeAttribute('style');
+        gameBtns.forEach((el) => {
+            if (el != game) {
+                el.style.color = el.getAttribute('color');
+                el.style.removeProperty('background');
+            }
+        });
 
-        if (game == lotofacilGame) {
-            actualGameInfo = lotofacilInfo;
-        } else if (game == megasenaGame) {
-            actualGameInfo = megasenaInfo;
-        } else {
-            actualGameInfo = lotomaniaInfo;
-        }
+        games.forEach((el) => {
+            if (el.type == game.id) {
+                actualGameInfo = el;
+            }
+        });
 
         setStyle(game);
         setGameNumbers();
@@ -73,8 +79,8 @@
         $gameDescription.innerHTML = actualGameInfo.description;
     }
 
-    var $divNumbers = document.getElementsByClassName('divNumbers')[0];
-    var numberList,
+    const $divNumbers = document.getElementsByClassName('divNumbers')[0];
+    let numberList,
         selectedNumbers = [];
     let qtdNumeros = document.getElementById('qtdNumeros');
 
@@ -85,7 +91,7 @@
         qtdNumeros.innerHTML = selectedNumbers.length;
         qtdNumeros.style.color = actualGameInfo.color;
         for (let i = 1; i <= actualGameInfo.range; i++) {
-            var numberBtn = document.createElement('button');
+            let numberBtn = document.createElement('button');
             numberBtn.innerHTML = i;
             numberBtn.value = i;
             numberList.push(numberBtn);
@@ -124,16 +130,16 @@
         });
     }
 
-    var $clearGameBtn = document.getElementById('clearGameBtn');
+    const $clearGameBtn = document.getElementById('clearGameBtn');
     $clearGameBtn.addEventListener('click', () => clearGame());
 
     function clearGame() {
         setGameNumbers();
     }
 
-    var $completeGameBtn = document.getElementById('completeGameBtn');
+    const $completeGameBtn = document.getElementById('completeGameBtn');
     $completeGameBtn.addEventListener('click', () => completeGame());
-    var randomNumbers = [];
+    let randomNumbers = [];
 
     function completeGame() {
         randomNumbers = [];
@@ -141,7 +147,7 @@
         let range = Number(actualGameInfo['range']);
 
         while (randomNumbers.length < total) {
-            var random = Math.floor(Math.random() * range + 1);
+            let random = Math.floor(Math.random() * range + 1);
 
             if (!randomNumbers.includes(random)) {
                 if (!selectedNumbers.includes(random)) {
@@ -154,13 +160,23 @@
         });
     }
 
-    var addToCartBtn = document.getElementById('addToCartBtn');
+    const addToCartBtn = document.getElementById('addToCartBtn');
     addToCartBtn.addEventListener('click', () => createElement());
-    var contId = 0;
-    var totalPrice = 0;
-    var elements = [];
-    var deleteButtons = [];
+    let contId = 0;
+    let totalPrice = 0;
+    let elements = [];
+    let deleteButtons = [];
     let numbers = [];
+
+    function verifyNumber(noRepeatNumbers) {
+        let retorno = false;
+        numbers.forEach((num) => {
+            if (num.toString() == noRepeatNumbers.toString()) {
+                retorno = true;
+            }
+        });
+        return retorno;
+    }
 
     function createElement() {
         let noRepeatNumbers = [...new Set(selectedNumbers)];
@@ -170,56 +186,61 @@
                 alert(`Você deve escolher ${actualGameInfo['max-number']} números! Ainda faltam ${actualGameInfo['max-number'] - noRepeatNumbers.length} números.`);
             }
         } else {
-            numbers.push(noRepeatNumbers);
-            console.log(numbers);
-            clearGame();
-            let selectedNumbersStr = noRepeatNumbers.sort((a, b) => a - b).join(', ');
-            let id = (contId += 1);
-            totalPrice += Number(actualGameInfo.price);
+            noRepeatNumbers.sort((a, b) => a - b);
 
-            // Botão para remover aposta
-            let img = document.createElement('img');
-            img.className = 'lixeiraImg';
-            img.src = 'images/lixeira.png';
-            let button = document.createElement('button');
-            button.id = id;
-            button.className = 'lixeiraBtn';
-            button.style.borderRightColor = actualGameInfo.color;
-            button.appendChild(img);
+            if (verifyNumber(noRepeatNumbers)) {
+                alert('Essa aposta já foi realizada.');
+            } else {
+                numbers.push(noRepeatNumbers);
+                clearGame();
+                let selectedNumbersStr = noRepeatNumbers.sort((a, b) => a - b).join(', ');
+                let id = (contId += 1);
+                totalPrice += Number(actualGameInfo.price);
 
-            // div contendo nome do jogo, preço e números apostados
-            let divInfo = document.createElement('div');
-            let divNumbers = document.createElement('div');
-            divNumbers.innerHTML = selectedNumbersStr;
-            let divGameName = document.createElement('div');
-            divGameName.innerHTML = actualGameInfo.type;
-            divGameName.style.color = actualGameInfo.color;
-            divGameName.className = 'game';
-            let divPrice = document.createElement('div');
-            divPrice.innerHTML = ` R$ ${realConvert(actualGameInfo.price)}`;
-            divPrice.className = 'd-inline';
+                // Botão para remover aposta
+                let img = document.createElement('img');
+                img.className = 'lixeiraImg';
+                img.src = 'images/lixeira.png';
+                let button = document.createElement('button');
+                button.id = id;
+                button.className = 'lixeiraBtn';
+                button.style.borderRightColor = actualGameInfo.color;
+                button.appendChild(img);
 
-            divInfo.appendChild(divNumbers, divGameName, divPrice);
-            divInfo.appendChild(divGameName);
-            divInfo.appendChild(divPrice);
+                // div contendo nome do jogo, preço e números apostados
+                let divInfo = document.createElement('div');
+                let divNumbers = document.createElement('div');
+                divNumbers.innerHTML = selectedNumbersStr;
+                let divGameName = document.createElement('div');
+                divGameName.innerHTML = actualGameInfo.type;
+                divGameName.style.color = actualGameInfo.color;
+                divGameName.className = 'game';
+                let divPrice = document.createElement('div');
+                divPrice.innerHTML = ` R$ ${realConvert(actualGameInfo.price)}`;
+                divPrice.className = 'd-inline';
 
-            // Div Pai
-            let divMain = document.createElement('div');
-            divMain.id = id;
-            divMain.value = actualGameInfo.price;
-            divMain.className = 'cardApostas';
-            divMain.appendChild(button);
-            divMain.appendChild(divInfo);
+                divInfo.appendChild(divNumbers, divGameName, divPrice);
+                divInfo.appendChild(divGameName);
+                divInfo.appendChild(divPrice);
 
-            deleteButtons.push(button);
-            elements.push(divMain);
-            addElementToCart(divMain);
-            addRemoveListener();
+                // Div Pai
+                let divMain = document.createElement('div');
+                divMain.id = id;
+                divMain.value = actualGameInfo.price;
+                divMain.className = 'cardApostas';
+                divMain.appendChild(button);
+                divMain.appendChild(divInfo);
+
+                deleteButtons.push(button);
+                elements.push(divMain);
+                addElementToCart(divMain);
+                addRemoveListener();
+            }
         }
     }
 
-    var divFather = document.getElementById('divOverflow');
-    var totalPriceDiv = document.getElementById('valorTotal');
+    const divFather = document.getElementById('divOverflow');
+    const totalPriceDiv = document.getElementById('valorTotal');
     let noBet = document.getElementById('semAposta');
 
     function addElementToCart(divMain) {
@@ -237,7 +258,7 @@
     function deleteElement(btnId) {
         elements.forEach((el) => {
             if (el.id == btnId) {
-                var index = elements.indexOf(el);
+                let index = elements.indexOf(el);
                 if (index > -1) {
                     elements.splice(index, 1);
                 }
